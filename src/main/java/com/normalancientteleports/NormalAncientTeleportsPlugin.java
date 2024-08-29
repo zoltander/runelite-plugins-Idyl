@@ -26,7 +26,6 @@ import java.util.List;
 )
 public class NormalAncientTeleportsPlugin extends Plugin
 {
-	private final String DEF_FILE_SPELLS = "spells.json";
 
 	@Inject
 	private Client client;
@@ -37,22 +36,15 @@ public class NormalAncientTeleportsPlugin extends Plugin
 	@Inject
 	private NormalAncientTeleportsConfig config;
 
-	@Inject
-	private Gson gson;
-
-	private List<NormalAncientTeleportsSpellData> spells;
-
-	@Override
-	protected void startUp() throws Exception
-	{
-		InputStream resourceStream = NormalAncientTeleportsSpellData.class.getResourceAsStream(DEF_FILE_SPELLS);
-		InputStreamReader definitionReader = new InputStreamReader(resourceStream);
-		this.spells = Arrays.asList(gson.fromJson(definitionReader, NormalAncientTeleportsSpellData[].class));
-	}
-
-	@Override
-	protected void shutDown() throws Exception
-	{
+	public static String replaceTeleportNames (String original) {
+		return original.replace("Senntisten", "Exam Centre")
+				.replace("Paddewwa", "Edgeville Dungeon")
+				.replace("Kharyrll", "Canifis")
+				.replace("Lassar", "Ice Mountain")
+				.replace("Dareeyak", "Crazy Archaeologist")
+				.replace("Carrallanger", "Graveyard of Shadows")
+				.replace("Annakarl", "Demonic Ruins")
+				.replace("Ghorrock", "Frozen Waste");
 	}
 
 	@Subscribe
@@ -76,57 +68,22 @@ public class NormalAncientTeleportsPlugin extends Plugin
 			Widget w = client.getWidget(spellComponent);
 
 			w.setName(
-					w.getName().replace("Senntisten", "Exam Centre")
-							.replace("Paddewwa", "Edgeville Dungeon")
-							.replace("Kharyrll", "Canifis")
-							.replace("Lassar", "Ice Mountain")
-							.replace("Dareeyak", "Crazy Archaeologist")
-							.replace("Carrallanger", "Graveyard of Shadows")
-							.replace("Annakarl", "Demonic Ruins")
-							.replace("Ghorrock", "Frozen Waste"));
+					replaceTeleportNames(w.getName()));
 		}
 	}
 
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded e) {
-		if(spells == null) return;
-
-		// On Spell book loaded
-		if(e.getGroupId() == WidgetID.SPELLBOOK_GROUP_ID) {
-			spells.forEach(spell -> {
-				Widget widget = client.getWidget(spell.widgetID);
-				String newText = widget.getName().replaceAll(spell.originalName, spell.newName);
-				widget.setName(newText);
-			});
-		}
-		else if(e.getGroupId() == 17 && config.replacePortalNexus()) {
+		if(e.getGroupId() == 17 && config.replacePortalNexus()) {
 			Widget widget = client.getWidget(17, 12);
 
 			for(Widget w : widget.getChildren()) {
-				spells.forEach(spell -> {
-					if(w.getText().contains(spell.originalName)) {
-						String newText = w.getText().replaceAll(spell.originalName, spell.newName);
-						w.setText(newText);
-					}
-				});
+				w.setText(
+						replaceTeleportNames(w.getText()));
 			}
 		}
 	}
 
-	@Subscribe
-	public void onScriptPostFired(ScriptPostFired e) {
-		Widget widget = client.getWidget(14287047);
-		if(widget == null || widget.getChildren() == null) return;
-
-		Widget textWidget = widget.getChild(3);
-
-		spells.forEach(spell -> {
-			if(textWidget.getText().contains(spell.originalName)) {
-				String newText = textWidget.getText().replaceAll(spell.originalName.concat(" Teleport"), spell.newName);
-				textWidget.setText(newText);
-			}
-		});
-	}
 
 	@Provides
 	NormalAncientTeleportsConfig provideConfig(ConfigManager configManager)
