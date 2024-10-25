@@ -1,6 +1,17 @@
 # Normal Ancient Teleports
 
-Renames the teleports in the Ancient spell book to their logical names
+Renames the teleports in the Ancient spell book to their logical names  
+
+| Original     | Updated              |
+|:------------:|:--------------------:|
+| Senntisten   | Exam Centre          |
+| Paddewwa     | Edgeville Dungeon    |
+| Kharyrll     | Canifis              |
+| Lassar       | Ice Mountain         |
+| Dareeyak     | Crazy Archaeologist  |
+| Carrallanger | Graveyard of Shadows |
+| Annakarl     | Demonic Ruins        |
+| Ghorrock     | Frozen Waste         |
 
 # Patreon
 https://patreon.com/Idyl
